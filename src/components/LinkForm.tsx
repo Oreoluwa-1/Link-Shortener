@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
 import LinkCard from "./LinkCard";
 
 export default function LinkForm() {
@@ -19,30 +18,18 @@ export default function LinkForm() {
 
     try {
       setError("");
-      const res = await axios.post(
-        "https://api-ssl.bitly.com/v4/shorten",
-        {
-          long_url: url,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_BITLY_TOKEN}`,
-            "Content-Type": "application/json",
-          },
-        }
+      const res = await fetch(
+        `https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`
       );
-
-      setShortUrl(res.data.link);
-    } catch (err) {
+      const data = await res.text(); // TinyURL returns plain text
+      setShortUrl(data);
+    } catch {
       setError("Something went wrong. Try again.");
-      console.error(err);
     }
   };
 
   return (
     <div className="w-full max-w-lg mx-auto p-6 bg-white shadow-md rounded-xl">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">🔗 Link Shortener</h2>
-
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           type="text"
